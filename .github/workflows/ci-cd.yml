@@ -47,7 +47,7 @@ jobs:
 
     steps:
       - name: Prepare SSH key
-        if: ${{ secrets.DEPLOY_KEY }}
+        if: ${{ secrets.DEPLOY_KEY != '' }}
         run: |
           echo "${{ secrets.DEPLOY_KEY }}" > id_rsa
           chmod 600 id_rsa
