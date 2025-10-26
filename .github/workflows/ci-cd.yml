@@ -46,24 +46,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Prepare SSH key
-        if: ${{ secrets.DEPLOY_KEY != '' }}
+      - name: Show deployment instructions
         run: |
-          echo "${{ secrets.DEPLOY_KEY }}" > id_rsa
-          chmod 600 id_rsa
-
-      - name: Pull & run container on target host
-        run: |
-          # --- Option A: Remote deploy to VM via SSH ---
-          # ssh -i id_rsa -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "
-          #   docker login -u '${{ secrets.DOCKER_USERNAME }}' -p '${{ secrets.DOCKER_PASSWORD }}' &&
-          #   docker pull ${{ secrets.DOCKER_USERNAME }}/cicd-demo:latest &&
-          #   docker rm -f cicd-demo || true &&
-          #   docker run -d --name cicd-demo -p 80:3000 ${{ secrets.DOCKER_USERNAME }}/cicd-demo:latest
-          # "
-
-          # --- Option B: Manual deployment instructions (fallback) ---
+          echo "=== CI/CD Pipeline Completed Successfully! ==="
+          echo ""
+          echo "Docker image has been built and pushed to Docker Hub:"
+          echo "Image: ${{ secrets.DOCKER_USERNAME }}/cicd-demo:latest"
+          echo ""
           echo "To deploy manually on any machine:"
-          echo "docker login -u '${{ secrets.DOCKER_USERNAME }}' -p '<REDACTED>'"
-          echo "docker pull ${{ secrets.DOCKER_USERNAME }}/cicd-demo:latest"
-          echo "docker run -d --name cicd-demo -p 80:3000 ${{ secrets.DOCKER_USERNAME }}/cicd-demo:latest"
+          echo "1. docker login -u '${{ secrets.DOCKER_USERNAME }}'"
+          echo "2. docker pull ${{ secrets.DOCKER_USERNAME }}/cicd-demo:latest"
+          echo "3. docker run -d --name cicd-demo -p 80:3000 ${{ secrets.DOCKER_USERNAME }}/cicd-demo:latest"
+          echo ""
+          echo "Your API will be available at: http://localhost/"
+          echo "Health check: http://localhost/health"
