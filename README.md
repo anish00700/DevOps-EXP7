@@ -153,3 +153,4 @@ This experiment demonstrates:
 **Repository:** https://github.com/anish00700/DevOps-EXP7.git
 # Trigger CI/CD pipeline
 # Added Docker Hub secrets
+# Re-running pipeline with updated secrets
