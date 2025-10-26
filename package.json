@@ -1,0 +1,20 @@
+{
+  "name": "devops-exp7",
+  "version": "1.0.0",
+  "description": "DevOps Experiment 7 - CI/CD Pipeline with Node.js, Docker, and GitHub Actions",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "jest --runInBand"
+  },
+  "keywords": ["devops", "cicd", "nodejs", "docker", "github-actions"],
+  "author": "Anish Patil",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3"
+  }
+}

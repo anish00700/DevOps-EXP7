@@ -1,0 +1,69 @@
+name: CI-CD Pipeline
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/cicd-demo:${{ github.sha }} .
+
+      - name: Log in to Docker Hub
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Push image to Docker Hub
+        run: |
+          docker tag ${{ secrets.DOCKER_USERNAME }}/cicd-demo:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/cicd-demo:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/cicd-demo:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/cicd-demo:latest
+
+  deploy:
+    name: Deploy container
+    needs: build-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Prepare SSH key
+        if: ${{ secrets.DEPLOY_KEY }}
+        run: |
+          echo "${{ secrets.DEPLOY_KEY }}" > id_rsa
+          chmod 600 id_rsa
+
+      - name: Pull & run container on target host
+        run: |
+          # --- Option A: Remote deploy to VM via SSH ---
+          # ssh -i id_rsa -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "
+          #   docker login -u '${{ secrets.DOCKER_USERNAME }}' -p '${{ secrets.DOCKER_PASSWORD }}' &&
+          #   docker pull ${{ secrets.DOCKER_USERNAME }}/cicd-demo:latest &&
+          #   docker rm -f cicd-demo || true &&
+          #   docker run -d --name cicd-demo -p 80:3000 ${{ secrets.DOCKER_USERNAME }}/cicd-demo:latest
+          # "
+
+          # --- Option B: Manual deployment instructions (fallback) ---
+          echo "To deploy manually on any machine:"
+          echo "docker login -u '${{ secrets.DOCKER_USERNAME }}' -p '<REDACTED>'"
+          echo "docker pull ${{ secrets.DOCKER_USERNAME }}/cicd-demo:latest"
+          echo "docker run -d --name cicd-demo -p 80:3000 ${{ secrets.DOCKER_USERNAME }}/cicd-demo:latest"
