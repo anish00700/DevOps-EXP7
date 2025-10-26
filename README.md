@@ -152,3 +152,4 @@ This experiment demonstrates:
 **Course:** DevOps - Experiment 7  
 **Repository:** https://github.com/anish00700/DevOps-EXP7.git
 # Trigger CI/CD pipeline
+# Added Docker Hub secrets
